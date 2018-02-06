@@ -1,24 +1,17 @@
 from ControlCAN import *
-from Storage import *
 import msvcrt
 
 
-
 def main():
-    sql = StorageToSQL()
-    sql.createtable()
-    can = ControlCAN(devtype=17)
+    can = ControlCAN()
+    can.createtable()
     can.opendevice()
     can.initcan()
     can.startcan()
     while 1:
         if kbq(): break
-        num = can.receive()
-        sql.copy(can.receivebuf)
-        sql.storage(num)
-        sql.commit()
+        can.receive()
     del can
-    del sql
 
 
 def kbq():
