@@ -31,6 +31,7 @@ class ControlCAN:
         self.emptynum = 0
 
         self.vlist = [0] * 16
+        self.tlist = [0] * 16
 
         self.buffersize = buffersize
         self.datanum = 0
@@ -81,6 +82,22 @@ class ControlCAN:
             `V14` FLOAT NOT NULL,\
             `V15` FLOAT NOT NULL,\
             `V16` FLOAT NOT NULL,\
+            `T1` FLOAT NOT NULL,\
+            `T2` FLOAT NOT NULL,\
+            `T3` FLOAT NOT NULL,\
+            `T4` FLOAT NOT NULL,\
+            `T5` FLOAT NOT NULL,\
+            `T6` FLOAT NOT NULL,\
+            `T7` FLOAT NOT NULL,\
+            `T8` FLOAT NOT NULL,\
+            `T9` FLOAT NOT NULL,\
+            `T10` FLOAT NOT NULL,\
+            `T11` FLOAT NOT NULL,\
+            `T12` FLOAT NOT NULL,\
+            `T13` FLOAT NOT NULL,\
+            `T14` FLOAT NOT NULL,\
+            `T15` FLOAT NOT NULL,\
+            `T16` FLOAT NOT NULL,\
             PRIMARY KEY (`INDEX`));" % (self.schema, self.ttable)
         self.cursor.execute(sql)
         print('创建表格成功')
@@ -178,10 +195,30 @@ class ControlCAN:
                     self.vlist[13] = (self.receivebuf[i].Data[2] * 256 + self.receivebuf[i].Data[3]) / 10000
                     self.vlist[14] = (self.receivebuf[i].Data[4] * 256 + self.receivebuf[i].Data[5]) / 10000
                     self.vlist[15] = (self.receivebuf[i].Data[6] * 256 + self.receivebuf[i].Data[7]) / 10000
-                    # print(self.vlist)
 
-                    sql = "INSERT INTO %s(V1,V2,V3,V4,V5,V6,V7,V8,V9,V10,V11,V12,V13,V14,V15,V16)\
-                        VALUES('%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f')" % \
+                elif ID == 0x881:
+                    self.tlist[0] = (self.receivebuf[i].Data[0] * 256 + self.receivebuf[i].Data[1]) / 10
+                    self.tlist[1] = (self.receivebuf[i].Data[2] * 256 + self.receivebuf[i].Data[3]) / 10
+                    self.tlist[2] = (self.receivebuf[i].Data[4] * 256 + self.receivebuf[i].Data[5]) / 10
+                    self.tlist[3] = (self.receivebuf[i].Data[6] * 256 + self.receivebuf[i].Data[7]) / 10
+                elif ID == 0x885:
+                    self.tlist[4] = (self.receivebuf[i].Data[0] * 256 + self.receivebuf[i].Data[1]) / 10
+                    self.tlist[5] = (self.receivebuf[i].Data[2] * 256 + self.receivebuf[i].Data[3]) / 10
+                    self.tlist[6] = (self.receivebuf[i].Data[4] * 256 + self.receivebuf[i].Data[5]) / 10
+                    self.tlist[7] = (self.receivebuf[i].Data[6] * 256 + self.receivebuf[i].Data[7]) / 10
+                elif ID == 0x889:
+                    self.tlist[8] = (self.receivebuf[i].Data[0] * 256 + self.receivebuf[i].Data[1]) / 10
+                    self.tlist[9] = (self.receivebuf[i].Data[2] * 256 + self.receivebuf[i].Data[3]) / 10
+                    self.tlist[10] = (self.receivebuf[i].Data[4] * 256 + self.receivebuf[i].Data[5]) / 10
+                    self.tlist[11] = (self.receivebuf[i].Data[6] * 256 + self.receivebuf[i].Data[7]) / 10
+                elif ID == 0x88d:
+                    self.tlist[12] = (self.receivebuf[i].Data[0] * 256 + self.receivebuf[i].Data[1]) / 10
+                    self.tlist[13] = (self.receivebuf[i].Data[2] * 256 + self.receivebuf[i].Data[3]) / 10
+                    self.tlist[14] = (self.receivebuf[i].Data[4] * 256 + self.receivebuf[i].Data[5]) / 10
+                    self.tlist[15] = (self.receivebuf[i].Data[6] * 256 + self.receivebuf[i].Data[7]) / 10
+
+                    sql = "INSERT INTO %s(V1,V2,V3,V4,V5,V6,V7,V8,V9,V10,V11,V12,V13,V14,V15,V16,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16)\
+                        VALUES('%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f','%f')" % \
                           (self.ttable,
                            self.vlist[0],
                            self.vlist[1],
@@ -198,7 +235,23 @@ class ControlCAN:
                            self.vlist[12],
                            self.vlist[13],
                            self.vlist[14],
-                           self.vlist[15],)
+                           self.vlist[15],
+                           self.tlist[0],
+                           self.tlist[1],
+                           self.tlist[2],
+                           self.tlist[3],
+                           self.tlist[4],
+                           self.tlist[5],
+                           self.tlist[6],
+                           self.tlist[7],
+                           self.tlist[8],
+                           self.tlist[9],
+                           self.tlist[10],
+                           self.tlist[11],
+                           self.tlist[12],
+                           self.tlist[13],
+                           self.tlist[14],
+                           self.tlist[15],)
                     self.cursor.execute(sql)
 
             self.datanum = self.datanum + respond
@@ -208,13 +261,14 @@ class ControlCAN:
 
             if self.ctime != time.localtime():
                 self.ctime = time.localtime()
-                print(time.strftime("%Y-%m-%d %H:%M:%S", self.ctime), end=' ')
+                print(time.strftime("%Y-%m-%d %H:%M:%S", self.ctime))
                 print(
-                    "| %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f |" % (
-                        self.vlist[0], self.vlist[1], self.vlist[2], self.vlist[3], self.vlist[4], self.vlist[5],
-                        self.vlist[6],
-                        self.vlist[7], self.vlist[8], self.vlist[9], self.vlist[10], self.vlist[11], self.vlist[12],
-                        self.vlist[13], self.vlist[14], self.vlist[15]))
+                    "| %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f |\n"
+                    "| %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f | %.2f |" % (
+                        self.vlist[0], self.vlist[1], self.vlist[2], self.vlist[3], self.vlist[4], self.vlist[5],self.vlist[6],self.vlist[7], 
+                        self.vlist[8], self.vlist[9], self.vlist[10], self.vlist[11], self.vlist[12],self.vlist[13], self.vlist[14], self.vlist[15],
+                        self.tlist[0], self.tlist[1], self.tlist[2], self.tlist[3], self.tlist[4], self.tlist[5],self.tlist[6], self.tlist[7],
+                        self.tlist[8], self.tlist[9], self.tlist[10], self.tlist[11], self.tlist[12], self.tlist[13],self.tlist[14], self.tlist[15]))
 
             # f=open('pytxt.txt','a')
             # word = "%s %d\n"%(time.strftime("%Y-%m-%d %H:%M:%S", self.ctime),self.receivebuf[0].TimeStamp)
